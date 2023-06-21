@@ -7,13 +7,14 @@ function getStartOptions() {
 		autosave: true,
 		msDisplay: "always",
 		theme: "default",
-		hqTree: false,
-		offlineProd: true,
+		hqTree: true,
+		offlineProd: false,
 		hideChallenges: false,
 		showStory: true,
 		forceOneTab: false,
 		oldStyle: false,
 		tooltipForcing: true,
+		hardResetconfirmation: true,
 	}
 }
 
@@ -76,3 +77,4 @@ function milestoneShown(layer, id) {
 	}
 	return false;
 }
+
