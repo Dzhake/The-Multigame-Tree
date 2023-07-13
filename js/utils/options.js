@@ -14,7 +14,7 @@ function getStartOptions() {
 		forceOneTab: false,
 		oldStyle: false,
 		tooltipForcing: true,
-		hardResetconfirmation: true,
+		hardResetConfirmation: true,
 	}
 }
 

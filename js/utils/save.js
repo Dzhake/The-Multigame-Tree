@@ -102,7 +102,8 @@ function getStartClickables(layer) {
 	if (layers[layer].clickables) {
 		for (id in layers[layer].clickables)
 			if (isPlainObject(layers[layer].clickables[id]))
-				data[id] = "";
+				if (layer == "VVVVVV" && id == 11) data[id] = false
+				else data[id] = "";
 	}
 	return data;
 }
