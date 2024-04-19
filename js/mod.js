@@ -18,9 +18,10 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br><br>
-	<h2><span class="changelog_newVersion">v0.0.0.0.1</span></h2><br>
-	<span class="changelog_addedLayer_prologue">- Added Prologue.</span><br>
-	<span class="changelog_addedLayer_vvvvvv">- Added VVVVVV.</span><br>`
+	<h2><span class="shinyText_white">Endgame: VVVVVV milestones 2 and inverted 2 and 800 prlogue points</span></h2><br>
+	<h2><span class="shinyText_white">v0.0.0.0.1</span></h2><br>
+	<span class="shinyText_prologue">- Added Prologue.</span><br>
+	<span class="shinyText_VVVVVV">- Added VVVVVV.</span><br>`
 
 let winText = `Thanks for playing!`
 
@@ -52,6 +53,10 @@ function getPointGen() {
 
 	if (hasUpgrade("VVVVVV",11)) gain = gain.times(upgradeEffect("VVVVVV",11))
 	if (hasMilestone("VVVVVV",1)) gain = gain.times(player.VVVVVV.points.add(1))
+
+
+
+	if (inChallenge("VVVVVV",11)) gain = gain.pow((9-challengeCompletions("VVVVVV", 11))*0.1)
 
 	return gain
 }

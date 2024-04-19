@@ -19,6 +19,8 @@ addLayer("p", {
         mult = new Decimal(1)
 
         if (hasUpgrade("p",12)) {mult = mult.times(2)}
+        if (inChallenge("VVVVVV",11)) mult = mult.pow((9-challengeCompletions("VVVVVV", 11))*0.1)
+
 
         return mult
     },
@@ -53,16 +55,22 @@ addLayer("p", {
         }
 
 
-
         layerDataReset("p",keep)
 
         player.p.upgrades = keepUpgrades
+
+        if (inChallenge("VVVVVV",11)) player.p.upgrades = []
+
     },
 
 
     automate() {
-        for (const id of player.p.upgradesToAutomate) {
-            buyUpgrade("p",id)
+        let chal = 0
+        if (inChallenge("VVVVVV",11)) chal = 111
+        if (chal == 0) {
+            for (const id of player.p.upgradesToAutomate) {
+                buyUpgrade("p",id)
+            }
         }
     },
 
@@ -77,7 +85,7 @@ addLayer("p", {
             cost: new Decimal(2),
         },
         13:{
-            description:"More points based on prlogue points!",
+            description:"More points based on prologue points!",
             cost: new Decimal(10),
             effect() {
                 return player[this.layer].points.add(1).pow(0.25)
@@ -90,6 +98,11 @@ addLayer("p", {
         },
     }
 })
+
+
+
+
+
 
 addLayer("VVVVVV", {
     name: "VVVVVV", // This is optional, only used in a few places, If absent it just uses the layer id.
@@ -127,8 +140,21 @@ addLayer("VVVVVV", {
         }
     },
 
+    doReset(resettingLayer) {
+        let keep = []
+        let chal = 0
+        if (layers[resettingLayer].row <= this.row) return
+        if (inChallenge("VVVVVV",11)) keep.push("milestones"); keep.push("resets"); keep.push("inverted"); keep.push("best"); chal = 111  //reset points and upgrades if player is in challenge
+
+        layerDataReset("VVVVVV",keep)
+
+        if (chal == 111) player.VVVVVV.inverted.points = Decimal.dZero
+    },
+
+
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        mult = mult.add(challengeCompletions("VVVVVV", 11)*0.5)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -145,12 +171,20 @@ addLayer("VVVVVV", {
     clickables: {
         11: {
             title:"Invert gravity",
-            display() {return "Current state: "+getClickableState("VVVVVV",11)},
+            display() {let state = "Normal"; if(getClickableState("VVVVVV",11)) {state = "Inverted"} return "Current state: "+state},
             unlocked() {return player["VVVVVV"].best.gte(1)},
             canClick() {return player["VVVVVV"].best.gte(1)},
             onClick() {setClickableState(this.layer, this.id, !getClickableState(this.layer,this.id))},
             },
+        12: {
+            title:"DevSpeed toggle",
+            display() {return "Current state: "+getClickableState("VVVVVV",12)},
+            unlocked() {return true},
+            canClick() {return true},
+            onClick() {setClickableState(this.layer, this.id, !getClickableState(this.layer,this.id));if(getClickableState(this.layer,this.id) == true) player.devSpeed = 100;else player.devSpeed = 1},
+            },
         },
+        
 
     milestones: {
         0: {
@@ -166,7 +200,7 @@ addLayer("VVVVVV", {
         },
         2: {
             requirementDescription: "10 trinkets",
-            effectDescription: "Automate third prologue upgrade/keep it if got after inverted milestone 3",
+            effectDescription: "Automate third prologue upgrade/keep it if got after inverted milestone 3 <br> Unlock challenge if you have inverted milestone 3",
             done() { return player[this.layer].points.gte(10) },
             onComplete() {if (hasMilestone("VVVVVV",11)) {player.p.upgradesToKeep.push(13)} else {player.p.upgradesToAutomate.push(13)} } // Keep if got 11, else automate
         },
@@ -177,13 +211,13 @@ addLayer("VVVVVV", {
         },
         11: {
             requirementDescription: "5 inverted trinkets",
-            effectDescription: "Automate second prologue upgrade/keep it if got after milestone 2",
+            effectDescription: "Automate second prologue upgrade/keep it if got after VVVVVV milestone 2",
             done() { return player[this.layer].inverted.points.gte(5) },
             onComplete() {if (hasMilestone("VVVVVV",1)) {player.p.upgradesToKeep.push(12)} else {player.p.upgradesToAutomate.push(12) }}
         },
         12: {
             requirementDescription: "10 inverted trinkets",
-            effectDescription: "Automate forth prologue upgrade/keep it if got after milestone 3",
+            effectDescription: "Automate forth prologue upgrade/keep it if got after milestone 3 <br> Unlock challenge if you have VVVVVV milestone 3",
             done() { return player[this.layer].inverted.points.gte(10) },
             onComplete() {if (hasMilestone("VVVVVV",2)) {player.p.upgradesToKeep.push(14)} else {player.p.upgradesToAutomate.push(14) }}
         },
@@ -203,11 +237,28 @@ addLayer("VVVVVV", {
             effectDisplay() {return format(upgradeEffect(this.layer,this.id))+"x"},
         },
         21:{
-            description:"Upgrade 11 uses a better formula",
+            description:"VVVVVV Upgrade 11 uses a better formula",
             cost: new Decimal(3),
             currencyDisplayName: "inverted trinkets",
             currencyLocation: () => player.VVVVVV.inverted,
             currencyInternalName: "points",
+        },
+    },
+
+    challenges: {
+        11: {
+            name: "Less things :(",
+            fullDisplay() {return `Points and prologue points are <span class="shinyText_VVVVVV_darker">^0.`+(9-challengeCompletions("VVVVVV", 11))+`</span><br><br>Get 1 trinket to win<br><br>Reward: Multiply trinkets gain.<br><br>Currenlty: x`+(challengeCompletions("VVVVVV", 11)*0.5+1)},
+            //goalDescription: "Get 1 trinket to win",
+            //rewardDescription() {return "Multiply trinkets gain.<br>Currenlty: "+challengeEffect("VVVVVV",11)},
+            canComplete() {return player.VVVVVV.points.gte(1)},
+            unlocked() {return hasMilestone("VVVVVV",2) && hasMilestone("VVVVVV",12)},
+            completionLimit: 10,
+            onEnter() {
+                layerDataReset("VVVVVV", ["milestones","resets","inverted","best"])
+                player.VVVVVV.inverted.points = Decimal.dZero
+                layerDataReset("p",["upgradesToKeep","upgradesToAutomate"])
+            },
         },
     },
 
@@ -228,6 +279,8 @@ addLayer("VVVVVV", {
                 "blank",
                 ["milestones",[0,1,2]],
                 ["upgrades",[1]],
+                "blank",
+                ["challenges",[1]],
             ],
         },
         "Inverted": {

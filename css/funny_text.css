@@ -1,12 +1,21 @@
-.changelog_addedLayer_prologue{
+.shinyText_white{
+    color: #FFFFFF;
+    text-shadow: #FFFFFF 0 0 10px;
+}
+
+.shinyText_prologue{
     color: #2ECC71;
     text-shadow: #2ECC71 0 0 10px;
 }
-.changelog_addedLayer_vvvvvv{
+.shinyText_VVVVVV{
     color: #aab7b8;
     text-shadow: #aab7b8 0 0 10px;
 }
-.changelog_newVersion{
-    color: #ffffff;
-    text-shadow: #ffffff 0 0 10px;
+.shinyText_VVVVVV_darker{
+    color: #5d6667;
+    text-shadow: #5d6667 0 0 10px;
+}
+.shinyText_VVVVVV_Inverted{
+    color: #a8baa5;
+    text-shadow: #a8baa5 0 0 10px;
 }
